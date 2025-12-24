@@ -145,4 +145,29 @@
     background-color: #059669;
 }
 
+/* username input utton styles */
+.username_area {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+#username_input {
+    flex: 1;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    font-size: 14px;
+}
+
+#set_username_btn {
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: none;
+    background-color: #3b82f6;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+}
+
 
