@@ -1,3 +1,4 @@
+// Authentication controller without jwt
 const authService = require("../services/auth.service");
 
 exports.signup = (req, res) => {
@@ -22,3 +23,4 @@ exports.login = (req, res) => {
         res.status(400).json({message: error.message});
     }
 }
+
