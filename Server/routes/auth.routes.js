@@ -10,7 +10,18 @@ router.post("/jwtsignup", jwtAuthController.jwtsignup);
 router.post("/jwtlogin", jwtAuthController.jwtlogin);
 
 // token validation middleware route
-router.get("/validate", authMiddleware.validate)
+// router.get("/validate", authMiddleware.validate);
+router.get(
+  "/validate",
+  authMiddleware.validate,
+  (req, res) => {
+    res.status(200).json({
+      message: "token is valid",
+      userId: req.userId
+    });
+  }
+);
+
 
 
 module.exports = router;

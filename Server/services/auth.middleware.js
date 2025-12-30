@@ -4,6 +4,7 @@ exports.validate = (req, res, next) => {
     try {
          // fetch the autherisation header
          const authHeader = req.headers.authorization;
+         console.log("auth header : ", authHeader );
 
          if(!authHeader) {
             return res.status(401).json({message : "authorization header missing "});

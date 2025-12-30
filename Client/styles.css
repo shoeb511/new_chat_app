@@ -118,6 +118,8 @@
 /* ========== INPUT AREA (BOTTOM BAR) ========== */
 .input_area {
     display: flex;
+    position: absolute;
+    bottom: 0;
     gap: 10px;
 }
 
