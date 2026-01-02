@@ -1,175 +1,164 @@
-/* ========== RESET ========== */
+/* ===== RESET ===== */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-/* ========== APP CONTAINER ========== */
-#app {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background-color: #f3f4f6;
+body {
+  background: #f4f6f8;
+  height: 100vh;
 }
 
-/* ========== TOP TOOLBAR ========== */
-#toolboxBar {
-    background-color: #1f2937;
-    padding: 12px;
-    display: flex;
-    align-items: center;
+/* ===== MODALS ===== */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
 }
 
-#toolboxBar button {
-    background-color: #ef4444;
-    color: white;
-    border: none;
-    padding: 8px 14px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
+.modal_content {
+  background: #fff;
+  padding: 25px;
+  width: 320px;
+  border-radius: 6px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 
-#toolboxBar button:hover {
-    background-color: #dc2626;
+.modal_content h1 {
+  margin-bottom: 15px;
+  text-align: center;
 }
 
-/* ========== CHAT AREA ========== */
-#chatArea {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 12px;
+.modal_content input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
-/* ========== MESSAGES LIST ========== 
+.modal_content button {
+  width: 100%;
+  padding: 10px;
+  background: #007bff;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal_content button:hover {
+  background: #0056b3;
+}
+
+.modal_content p {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+/* ===== CHAT APP ===== */
+#chat_app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* ===== HEADER ===== */
+#header {
+  background: #1f2933;
+  color: white;
+  padding: 10px 15px;
+}
+
+#toolBoxbar button {
+  padding: 6px 12px;
+  background: #10b981;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* ===== CHAT AREA ===== */
+#chat_area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+}
+
+
+/* messages list */
 #messages {
-    flex: 1;
-    list-style: none;
-    overflow-y: auto;
-    background-color: white;
-    padding: 10px;
-    border-radius: 6px;
-    margin-bottom: 10px;
-    border: 1px solid #e5e7eb;
+  list-style: none;
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  padding-right: 5px;
 }
 
-/* Individual message 
+
+/* single message */
 #messages li {
-    padding: 8px 12px;
-    margin-bottom: 8px;
-    background-color: #e5e7eb;
-    border-radius: 6px;
-    max-width: 70%;
-    word-wrap: break-word;
-    font-size: 14px;
-} */
-
-/* ========== SCROLLBAR (OPTIONAL NICE TOUCH) ========== */
-#messages::-webkit-scrollbar {
-    width: 6px;
+  max-width: 70%;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  border-radius: 12px;
+  background: #e5e7eb;
+  font-size: 14px;
 }
 
-#messages::-webkit-scrollbar-thumb {
-    background-color: #9ca3af;
-    border-radius: 4px;
+/* own message (later we’ll apply this via JS) */
+#messages li.self {
+  margin-left: auto;
+  background: #2563eb;
+  color: white;
 }
 
-/* ========== MESSAGE ALIGNMENT ========== */
-
-/* Common message style */
-#messages li {
-    display: inline-block;
-    clear: both;
-    padding: 8px 12px;
-    margin-bottom: 8px;
-    border-radius: 6px;
-    max-width: 70%;
-    word-wrap: break-word;
-    font-size: 14px;
-}
-
-/* CORRECTED: Own messages aligned to the RIGHT with green background */
-#messages li.own-message {
-    margin-left: auto;
-    margin-right: 0;
-    background-color: #10b981;
-    color: white;
-    text-align: right;
-    display: block;
-}
-
-/* CORRECTED: Other messages aligned to the LEFT with gray background */
-#messages li.other-message {
-    margin-left: 0;
-    margin-right: auto;
-    background-color: #e5e7eb;
-    color: #1f2937;
-    text-align: left;
-    display: block;
+/* ===== INPUT AREA ===== */
+#msg_input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  outline: none;
 }
 
 
+#input_bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 
+  position: sticky;
+  bottom: 100;
 
-
-/* ========== INPUT AREA (BOTTOM BAR) ========== */
-.input_area {
-    display: flex;
-    position: absolute;
-    bottom: 0;
-    gap: 10px;
+  background: #f4f6f8;
+  padding: 10px;
+  border-top: 1px solid #ddd;
 }
 
-/* Message input */
-#msgInput {
-    flex: 1;
-    padding: 10px;
-    border-radius: 6px;
-    border: 1px solid #d1d5db;
-    font-size: 14px;
+
+#send_button {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 20px;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
 }
 
-/* Send button */
-#sendBtn {
-    padding: 10px 18px;
-    border-radius: 6px;
-    border: none;
-    background-color: #10b981;
-    color: white;
-    cursor: pointer;
-    font-size: 14px;
+#send_button:hover {
+  background: #1e40af;
 }
-
-#sendBtn:hover {
-    background-color: #059669;
-}
-
-/* username input utton styles */
-.username_area {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-#username_input {
-    flex: 1;
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid #d1d5db;
-    font-size: 14px;
-}
-
-#set_username_btn {
-    padding: 8px 14px;
-    border-radius: 6px;
-    border: none;
-    background-color: #3b82f6;
-    color: white;
-    cursor: pointer;
-    font-size: 14px;
-}
-
 

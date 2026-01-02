@@ -1,7 +1,7 @@
 const jwtAuthService = require("../services/auth.service");
 
 exports.jwtsignup = async (req, res) => {
-    console.log("jwt auth controller called");
+    console.log("jwt auth controller sighup called");
 
     try{
         const {username, password} = req.body;
