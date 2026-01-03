@@ -1,14 +1,4 @@
-// console.log("Client main.js loaded");
 
-// const socket = io();
-// // CORRECTED: Store current user's socket ID to identify own messages
-// let currentUserId = null;
-
-// socket.on("connect", () => {
-//     // CORRECTED: Capture the current user's ID for message alignment logic
-//     currentUserId = socket.id;
-//     console.log("connected to the server with id", socket.id);
-// });
 
 // // Set username functionality
 // const usernameInput = document.getElementById("username_input");
@@ -66,11 +56,43 @@
     
 // });
 
+//  ----------------socket code ------------------
+console.log("Client main.js loaded");
+
+let authToken = localStorage.getItem("jwtToken");
+let socket = null;
+
+function connectSocket(token){
+    socket = io({
+        auth : {
+            token : token
+        }
+    });
+
+    socket.on("connect", () => {
+        console.log("user connected : ", socket.id);
+    });
+
+    socket.on("connect_error", (err) => {
+        console.log("socket auth failed : ", err.message);
+
+        // remove jwt token from local storage , token maybe expired
+        localStorage.removeItem("jwtToken");
+        authToken = null;
+
+        // show login modal 
+        loginModal.style.display = "flex";
+        signupModal.style.display = "none";
+        chatApp.style.display = "none";
+    });
+}
+
+
 
 
 // login and signup initial functionality
 
-let authToken = localStorage.getItem("jwtToken");
+//let authToken = localStorage.getItem("jwtToken");
 
 const loginModal = document.getElementById("login_modal");
 const signupModal = document.getElementById("signup_modal");
@@ -95,6 +117,7 @@ if(authToken){
     signupModal.style.display = "none";
     chatApp.style.display = "flex";
     console.log("retrieved token from local storage")
+    connectSocket(authToken);
 }
 else{
     // show login modal initially
@@ -166,6 +189,7 @@ function onloginSuccess(){
     chatApp.style.display = "block";
 
     console.log("jwt token recieved. ", authToken);
+    connectSocket(authToken);
 }
 
 

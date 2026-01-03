@@ -21,11 +21,20 @@ const startServer = async () => {
         console.log("socket io.use middleware hit");
 
         try {   
-            const token = socket.handshake.auth.token;
+            const token = socket.handshake.auth?.token;
+
+            if(!token){
+                throw next(new Error("token is missing :" ));
+            }
+
             console.log("handshake with token ", token );
+
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
             socket.userId = decoded.userId;
+
             console.log("userId assigned to socket.user id : " , socket.userId);
+
             next();
         }
         catch(err) {
@@ -37,8 +46,6 @@ const startServer = async () => {
 
 
     io.on("connection", (socket) => {
-
-        console.log("user connected ", socket.userId.toString());
 
         // socket.username = `User-${socket.id.slice(-4)}`;
 
@@ -54,15 +61,18 @@ const startServer = async () => {
         //     });
         // });
 
-        onlineUser.add(socket.userId.toString(), socket.id);
-        console.log("user added in online map", onlineUser.get(socket.userId.toString()));
+        const userId = socket.userId.toString();
+        console.log("user connected ", userId);
+
+        onlineUsers.set(userId, socket.id);
+        console.log("user added in online map", onlineUsers);
             
 
         // delete offline users from online usersmap after disconnect the user
 
         socket.on("disconnect", () => {
-            onlineUsers.delete(socket.userId.toString());
-            console.log("user disconnected..", socket.userId.toString());
+            onlineUsers.delete(userId);
+            console.log("user disconnected..", onlineUsers);
         });
     });
 
