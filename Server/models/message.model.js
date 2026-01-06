@@ -1,27 +1,29 @@
 const mongoose = require("mongoose");
+const User = require
 
 const messageSchema = new mongoose.Schema(
     {
-        senderid : {
+        senderId : {
             type : mongoose.Schema.Types.ObjectId,
-            ref : db_uder,
+            ref : "User",
             required : true
         },
 
-        recieverid : {
+        receiverId : {
             type : mongoose.Schema.Types.ObjectId,
-            ref : db_user,
+            ref : "User",
             required : true
         },
 
-        content : {
+        text : {
             type : String,
             required : true
         },
 
         status : {
             type : String,
-            enum : ["sent", "recieved", "deliverd"],
+            enum : ["sent", "received", "delivered"],
+
             default : "sent"
         }
     },
@@ -30,6 +32,6 @@ const messageSchema = new mongoose.Schema(
     }
 );
 
-messageSchema.index({ senderId : 1, recieverId : 1, createdAt : 1});
+messageSchema.index({ senderId : 1, receiverId : 1, createdAt : 1});
 
 module.exports = mongoose.model("Message", messageSchema);

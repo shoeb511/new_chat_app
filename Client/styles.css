@@ -12,6 +12,10 @@ body {
 }
 
 /* ===== MODALS ===== */
+.modal{
+  display:none;
+}
+
 .modal {
   position: fixed;
   top: 0;

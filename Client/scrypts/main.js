@@ -62,10 +62,10 @@ console.log("Client main.js loaded");
 let authToken = localStorage.getItem("jwtToken");
 let socket = null;
 
-function connectSocket(token){
+function connectSocket(authToken){
     socket = io({
         auth : {
-            token : token
+            token : authToken
         }
     });
 
@@ -200,6 +200,21 @@ function onloginSuccess(){
 
 
 
+//========private message server testing demo function ==============
+
+// window.sendTestMessage = (receiverId) => {
+//     socket.emit({"private_message", {
+//         receiverId:receiverId,
+//         text: "this is a test message , hi all!"
+//     });
+// };
+
+window.sendTestMessage = (receiverId) => {
+  socket.emit("private_message", {
+    receiverId: receiverId,
+    text: "this is a test message, hi all!"
+  });
+};
 
 
 

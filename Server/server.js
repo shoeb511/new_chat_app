@@ -15,6 +15,8 @@ const startServer = async () => {
     const server = http.createServer(app);
     const io = new Server(server);
 
+    const MessageModel = require("./models/message.model");
+
     // first check and verify the token attacked with request and attached with socket
     io.use((socket, next) => {
         
@@ -61,17 +63,64 @@ const startServer = async () => {
         //     });
         // });
 
-        const userId = socket.userId.toString();
-        console.log("user connected ", userId);
+        const senderId = socket.userId.toString();
+        console.log("user connected ", senderId);
 
-        onlineUsers.set(userId, socket.id);
+        onlineUsers.set(senderId, socket.id);
         console.log("user added in online map", onlineUsers);
+
+
+        // recieving live messages from users
+        socket.on("private_message", async (data) => {
+            try {
+                const {receiverId, text} = data;
+
+                if(!receiverId || !text){
+                    return;
+                }
+
+                console.log(`meeage from : ${senderId} to : ${receiverId}`);  
+
+                // save message to DB
+                const message = await MessageModel.create({
+                    senderId,
+                    receiverId,
+                    text,
+                    status: "sent"
+                });
+
+                //check whether the reciever is online
+                const receiverSocketId = onlineUsers.get(receiverId);
+
+                if(receiverSocketId) {
+                    io.to(receiverSocketId).emit("receive_message", {
+                        _id: message._id,
+                        senderId,
+                        receiverId,
+                        text,
+                        createdAt:message.createdAt
+                    });
+
+                    message.status = "delivered";
+                    await message.save();
+
+                    console.log("message delivered in real time ");
+                }
+                else{
+                    console.log("reciever is offline message stored in db");
+                }
+            }
+            catch(err) {
+                console.error("private message error", err.message);
+            }
+        });
+
             
 
         // delete offline users from online usersmap after disconnect the user
 
         socket.on("disconnect", () => {
-            onlineUsers.delete(userId);
+            onlineUsers.delete(senderId);
             console.log("user disconnected..", onlineUsers);
         });
     });

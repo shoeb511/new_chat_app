@@ -23,5 +23,10 @@ router.get(
 );
 
 
+// // message handler routes
+// const mh_controller = require("../controllers/messageHandler.cntroller");
+
+// router.get("/mhtest", mh_controller.messagehandler);
+
 
 module.exports = router;
