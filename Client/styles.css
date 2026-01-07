@@ -75,6 +75,8 @@ body {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  
+  
 }
 
 /* ===== HEADER ===== */
@@ -94,11 +96,73 @@ body {
 }
 
 /* ===== CHAT AREA ===== */
-#chat_area {
+/* #chat_area {
   flex: 1;
   display: flex;
   flex-direction: column;
   padding: 15px;
+  width: 60%;
+}
+
+#users_area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: right;
+  width: 40%;
+  background-color:pink;
+} */
+
+/* ===== CHAT APP LAYOUT ===== */
+#chat_app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* wrapper for chat + users */
+#main_content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* ===== CHAT AREA (LEFT) ===== */
+#chat_area {
+  flex: 3;               /* 60% */
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  background: #ffffff;
+  border-right: 1px solid #ddd;
+}
+
+/* ===== USERS AREA (RIGHT) ===== */
+#users_area {
+  flex: 2;               /* 40% */
+  display: flex;
+  flex-direction: column;
+  background: #f9fafb;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+/* users list */
+#users {
+  list-style: none;
+}
+
+/* user item */
+#users li {
+  padding: 10px;
+  margin-bottom: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #e5e7eb;
+}
+
+#users li:hover {
+  background: #d1d5db;
 }
 
 
@@ -165,4 +229,15 @@ body {
 #send_button:hover {
   background: #1e40af;
 }
+#messages li.own-message {
+  margin-left: auto;
+  background: #2563eb;
+  color: white;
+}
+
+#messages li.other-message {
+  background: #e5e7eb;
+}
+
+
 

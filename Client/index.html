@@ -39,23 +39,30 @@
             </div>
         </div>
 
-        <!-- chat area structure -->
-        <div id="chat_area">
-            <ul id="messages"></ul>
-            <!-- <input id="msg_input" placeholder="type message"/>
-            <button id="send_button">Send</button> -->
-            <div id="input_bar">
-                <input id="msg_input" placeholder="Type message..." />
-                <button id="send_button">Send</button>
+        <!-- main content -->
+        <div id="main_content">
+            <!-- chat area structure -->
+            <div id="chat_area">
+                <ul id="messages"></ul>
+                <!-- <input id="msg_input" placeholder="type message"/>
+                <button id="send_button">Send</button> -->
+                <div id="input_bar">
+                    <input id="msg_input" placeholder="Type message..." />
+                    <button id="send_button">Send</button>
+                </div>
             </div>
 
+            <!-- users area in the right side of the chat area -->
+                <div id="users_area">
+                <ul id="users"></ul>
+                </div>
         </div>
-
     </div>
 
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <script src="/scrypts/auth.js"></script>
     <script src="/scrypts/main.js"></script>
+    <script src="/scrypts/users.js"></script>
 
 </body>
     

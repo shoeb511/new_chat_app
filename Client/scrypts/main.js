@@ -85,6 +85,14 @@ function connectSocket(authToken){
         signupModal.style.display = "none";
         chatApp.style.display = "none";
     });
+
+    // ====== socket for received message rendering============
+    socket.on("receive_message", (message) => {
+        messageRender({
+            text: message.text,
+            isOwn: false
+        })
+    });
 }
 
 
@@ -118,6 +126,7 @@ if(authToken){
     chatApp.style.display = "flex";
     console.log("retrieved token from local storage")
     connectSocket(authToken);
+    loadAllUsers(authToken);
 }
 else{
     // show login modal initially
@@ -155,6 +164,7 @@ loginButton.addEventListener("click", async () => {
         authToken = await loginUser(username, password);
         localStorage.setItem("jwtToken", authToken);
         onloginSuccess();
+        
     }
     catch(err) {
         alert(err.message);
@@ -190,13 +200,67 @@ function onloginSuccess(){
 
     console.log("jwt token recieved. ", authToken);
     connectSocket(authToken);
+    loadAllUsers(authToken);
 }
 
 
+// function to render all the users from backend to the UI
+let currenChatUserId = null;
+let currentChatUsername = null;
+
+const userListElement = document.getElementById("users");
+
+function renderUsers(users){
+    userListElement.innerHTML = "";
+
+    for(let i=0; i<users.length; i++){
+        const user = users[i];
+
+        const li = document.createElement("li");
+
+        li.innerText = user.username;
+
+        li.setAttribute("data-user-id", user._id);
+
+        userListElement.appendChild(li);
+    }
+}
+
+// ===========send button event listener it will trigger the socket private
+//  message in the server ==========
+const sendButton = document.getElementById("send_button");
+const msgInput = document.getElementById("msg_input");
+
+
+sendButton.addEventListener("click", () => {
+    const text = msgInput.value.trim();
+    const receiverId = currentChatUserid;
+
+    if(!text || !receiverId) return ;
+
+    socket.emit("private_message", {
+        receiverId,
+        text
+    });
+
+    // render own message immediately
+    messageRender({text, isOwn : true});
+})
 
 
 
 
+//===========message rendering function to UI ====
+const messages = document.getElementById("messages");
+function messageRender({text, isOwn}){
+    const li = document.createElement("li");
+
+    li.className = isOwn ? "own-message" : "other-message";
+
+    li.textContent = text;
+
+    messages.appendChild(li);
+}
 
 
 
@@ -215,6 +279,12 @@ window.sendTestMessage = (receiverId) => {
     text: "this is a test message, hi all!"
   });
 };
+
+
+//=========implementation of userlist related code
+
+// fetching all the users from server
+
 
 
 
