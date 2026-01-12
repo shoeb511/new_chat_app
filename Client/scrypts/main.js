@@ -60,7 +60,22 @@
 console.log("Client main.js loaded");
 
 let authToken = localStorage.getItem("jwtToken");
+let currentUsername = localStorage.getItem("currentUsername");
+let currentUserId = localStorage.getItem("currentUserId");
 let socket = null;
+let currentChatUserId = null;
+let currentChatUsername = null;
+let userListElement = null;
+
+const chatCache = {};
+
+function getConversationId(userA, userB){
+    const key = [userA, userB].sort().join("_");
+    console.log("key conversation key generated : ", key);
+    return key;
+}
+
+
 
 function connectSocket(authToken){
     socket = io({
@@ -88,10 +103,29 @@ function connectSocket(authToken){
 
     // ====== socket for received message rendering============
     socket.on("receive_message", (message) => {
-        messageRender({
-            text: message.text,
-            isOwn: false
-        })
+
+        // const partnerId = 
+        //     message.senderId === currentUserId ? message.receiverId : message.senderId;
+
+        // conversation id instead of using partner id would be more rigid aproach to store the conversation in memory cache
+        const conversationId = getConversationId(message.senderId, message.receiverId);
+        console.log("conversation key generated in the socket.on receive message : ", conversationId);
+
+        if(!chatCache[conversationId]) {
+            chatCache[conversationId] = [];
+        }
+
+        chatCache[conversationId].push(message);
+
+        if(message.senderId === currentChatUserId || message.receiverId === currentChatUserId){ 
+  
+            messageRender({
+                text: message.text,
+                isOwn: message.senderId === currentUserId
+                //isOwn: String(msg.senderId) === String(currentUserId)
+
+            });
+        } 
     });
 }
 
@@ -115,6 +149,9 @@ const signupPassword = document.getElementById("signup_input_password");
 
 const signup_button = document.getElementById("signup_button");
 const loginButton = document.getElementById("login_button");
+const logoutButton = document.getElementById("logout");
+
+const messages = document.getElementById("messages");
 
 const chatApp = document.getElementById("chat_app");
 
@@ -126,7 +163,7 @@ if(authToken){
     chatApp.style.display = "flex";
     console.log("retrieved token from local storage")
     connectSocket(authToken);
-    loadAllUsers(authToken);
+    loadAllUsers();
 }
 else{
     // show login modal initially
@@ -161,8 +198,16 @@ loginButton.addEventListener("click", async () => {
     }
 
     try {
-        authToken = await loginUser(username, password);
+        const loginData = await loginUser(username, password);
+
+        authToken = loginData.token;
+        currentUserId = loginData.userId;
+        currentUsername = loginData.username;
+
         localStorage.setItem("jwtToken", authToken);
+        localStorage.setItem("username", currentUsername);
+        localStorage.setItem("currentUserId", currentUserId);
+
         onloginSuccess();
         
     }
@@ -192,8 +237,13 @@ signup_button.addEventListener("click", () => {
     }
 });
 
+//=============logout event listener and logut function================
+logoutButton.addEventListener("click", logout);
+
+
+
 // -------after successfully login-------------------------------------
-function onloginSuccess(){
+async function onloginSuccess(){
     loginModal.style.display = "none";
     signupModal.style.display = "none";
     chatApp.style.display = "block";
@@ -205,10 +255,9 @@ function onloginSuccess(){
 
 
 // function to render all the users from backend to the UI
-let currenChatUserId = null;
-let currentChatUsername = null;
 
-const userListElement = document.getElementById("users");
+
+userListElement = document.getElementById("users");
 
 function renderUsers(users){
     userListElement.innerHTML = "";
@@ -222,9 +271,116 @@ function renderUsers(users){
 
         li.setAttribute("data-user-id", user._id);
 
+        li.onclick = function () {
+            setActiveChatUser(user);
+        }
+
         userListElement.appendChild(li);
     }
 }
+
+// ====set active chat user 
+
+
+
+function setActiveChatUser(user){
+    currentChatUserId = String(user._id);
+    console.log("type of user._id is : ",typeof(user._id));
+    currentChatUsername = user.username;
+    console.log("type of user.username is : ", user.username);
+    console.log("current chat userId and current chat Username : ", currentChatUserId, " ", currentChatUsername);
+
+    document.querySelectorAll("#users li").forEach(li => {
+        li.classList.remove("active");
+    });
+
+    const selectedLi = document.querySelector(
+        `#users li[data-user-id="${currentChatUserId}"]`
+    );
+
+    if(selectedLi) {
+        selectedLi.classList.add("active");
+    }
+
+    // clear the message area
+    messages.innerHTML = "";
+    console.log(selectedLi.attributes);
+
+    // here we are going to load the older messages if any, 
+    // between the currentUser and selected user
+
+    // generate conversationId to render messages from cache or DB on page refresh or user switch
+
+    const conversationId = getConversationId(currentUserId, currentChatUserId);
+
+    if(chatCache[conversationId]){
+        console.log("message mil gae cache me : ", chatCache[conversationId]);
+        renderMessages(conversationId);
+    }
+    else{
+        loadChatHistory(authToken, currentChatUserId).then((dbMessages) => {
+            chatCache[conversationId] = dbMessages;
+            console.log("cache me nhi mile . db se uthakar cache me dale : ", chatCache[conversationId]);
+            renderMessages(conversationId); 
+        });
+    }
+
+    console.log("chating with : ", user.username);
+}
+
+// chat messages rendering code ============================================
+
+function renderMessages(conversationId){
+
+    messages.innerHTML = "";
+
+    const msgs = chatCache[conversationId] || [];
+
+    // msgs.forEach(msg => {
+    //     messageRender({
+    //         text: msg.text,
+    //         isOwn: msg.senderId === currentUserId
+    //     });
+    // });
+
+    msgs.forEach(msg => {
+    console.log("type of msg.senderId is : ", typeof(msg.senderId));
+    console.log("type of msg.currentUserId  is : ", typeof(currentUserId));
+    const isOwn = msg.senderId === currentUserId;
+
+        messageRender({
+            text: msg.text,
+            isOwn
+        });
+    });
+
+
+    messages.scrollTop = messages.scrollHeight;
+
+}
+
+
+
+//load all users from database function
+
+async function loadAllUsers(authToken){
+    try {
+        const response = await fetch("/user/allusers", {
+            headers: {
+                "Authorization": `Bearer ${authToken}`
+            }
+        });
+
+        const users = await response.json();
+        console.log("fetched users", users);
+
+        renderUsers(users);
+
+    } catch(error) {
+        throw new Error("failed to load users. : ", error.message );
+    }
+}
+
 
 // ===========send button event listener it will trigger the socket private
 //  message in the server ==========
@@ -234,24 +390,38 @@ const msgInput = document.getElementById("msg_input");
 
 sendButton.addEventListener("click", () => {
     const text = msgInput.value.trim();
-    const receiverId = currentChatUserid;
+    //const receiverId = currentChatUserId;
 
-    if(!text || !receiverId) return ;
+    if(!text || !currentChatUserId) return ;
 
     socket.emit("private_message", {
-        receiverId,
+        receiverId: currentChatUserId,
+        text
+    });
+
+    const conversationId = getConversationId(currentUserId, currentChatUserId);
+
+    // cache own messages
+    if(!chatCache[conversationId]){
+        chatCache[conversationId] = [];
+    }
+
+    chatCache[conversationId].push({
+        senderId: currentUserId,
+        receiverId: currentChatUserId,
         text
     });
 
     // render own message immediately
     messageRender({text, isOwn : true});
+    msgInput.value = "";
 })
 
 
 
 
 //===========message rendering function to UI ====
-const messages = document.getElementById("messages");
+
 function messageRender({text, isOwn}){
     const li = document.createElement("li");
 
@@ -288,3 +458,38 @@ window.sendTestMessage = (receiverId) => {
 
 
 
+// chats rendering and frontend integration
+
+function logout(){
+    // disconnect socket first
+    if(socket){
+        socket.disconnect();
+        socket = null;
+    }
+
+    // delete user related data from local storage
+    localStorage.removeItem("jwtToken");
+    localStorage.removeItem("currentUserId");
+    localStorage.removeItem("username");
+
+    // reset all the attributes
+    authToken = null;
+    currentUsername = null;
+    currentUserid = null;
+    currentChatUserId = null;
+    currentChatUsername = null;
+    
+    // clear cache
+    Object.keys(chatCache).forEach(key => delete chatCache[key]);
+    
+    // messages.innerHTML = null;
+    // userListElement.innerHTML = null;
+
+    chatApp.style.display = "none";
+    signupModal.style.display = "none";
+    loginModal.style.display = "flex";
+
+    console.log("User logged out successfully");
+
+
+}

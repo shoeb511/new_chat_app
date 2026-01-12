@@ -2,7 +2,7 @@
 async function loadAllUsers(authToken){
     try {
         const response = await fetch("/user/allusers", {
-            header: {
+            headers: {
                 "Authorization": `Bearer ${authToken}`
             }
         });
@@ -16,3 +16,4 @@ async function loadAllUsers(authToken){
         throw new Error("failed to load users. : ", error.message );
     }
 }
+

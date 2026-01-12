@@ -165,6 +165,10 @@ body {
   background: #d1d5db;
 }
 
+#users li.active {
+  background: #2563eb;
+  color: white;
+}
 
 /* messages list */
 #messages {

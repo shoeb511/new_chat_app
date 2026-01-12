@@ -22,9 +22,16 @@ exports.jwtlogin = async (req, res) => {
     try {
         const {username, password} = req.body;
 
-        const user = await jwtAuthService.login(username, password);
+        const response = await jwtAuthService.login(username, password);
 
-        res.status(201).json(user);
+        console.log("login response in controller", response.user.userId, response.user.username);
+
+        res.status(201).json({
+            token: response.token,
+            userId: response.user.userId,
+            username: response.user.username
+        });
+
     }
 
     catch(error) {

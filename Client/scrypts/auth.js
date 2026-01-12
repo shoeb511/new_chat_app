@@ -16,7 +16,7 @@ async function loginUser(username, password){
         throw new Error(data.message || "Login Failed");
     }
 
-    return data.token;
+    return data;
 }
 
 
