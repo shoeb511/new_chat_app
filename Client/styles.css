@@ -245,3 +245,32 @@ body {
 
 
 
+/* ===== MOBILE CHAT TOGGLE SYSTEM ===== */
+@media (max-width: 768px) {
+
+  /* Default: show users, hide chat */
+  #chat_area {
+    display: none;
+  }
+
+  #users_area {
+    width: 100%;
+    display: block;
+  }
+
+  /* When chat is active */
+  #chat_app.chat-active #chat_area {
+    display: flex;
+    width: 100%;
+  }
+
+  #chat_app.chat-active #users_area {
+    display: none;
+  }
+
+  /* Make input bar stick properly */
+  #input_bar {
+    position: sticky;
+    bottom: 0;
+  }
+}

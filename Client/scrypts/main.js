@@ -154,6 +154,8 @@ const logoutButton = document.getElementById("logout");
 const messages = document.getElementById("messages");
 
 const chatApp = document.getElementById("chat_app");
+const newChatButton = document.getElementById("new_chat");
+const backButton = document.getElementById("back_to_users");
 
 // code to switch from login to signup and vice versa
 // if the already have a token -> already have a token then chat area will load initially
@@ -279,12 +281,34 @@ function renderUsers(users){
     }
 }
 
+
+// functionality for behavior of UI in mobile devices
+// const chatApp = document.getElementById("chat_app");
+// const newChatButton = document.getElementById("new_chat");
+// const backButton = document.getElementById("back_to_users");
+
+
+function openChat(){
+    chatApp.classList.add("chat-active");
+
+    if(window.innerWidth <= 768){
+        backButton.style.display = "block";
+    }
+}
+
+function closeChat(){
+    chatApp.classList.remove("chat-active");
+    backButton.style.display = "none";
+}
+
+
 // ====set active chat user 
 
 
 
 function setActiveChatUser(user){
     currentChatUserId = String(user._id);
+    openChat();
     console.log("type of user._id is : ",typeof(user._id));
     currentChatUsername = user.username;
     console.log("type of user.username is : ", user.username);
@@ -327,6 +351,12 @@ function setActiveChatUser(user){
 
     console.log("chating with : ", user.username);
 }
+
+// back to users button eventlistner for the mobile users
+
+backButton.addEventListener("click", () => {
+    closeChat();
+})
 
 // chat messages rendering code ============================================
 
