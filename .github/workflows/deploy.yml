@@ -3,7 +3,7 @@ name: Deploy chatApp t0 EC2
 on:
   push:
       branches:
-	- main
+		- main
 
 
 jobs:
