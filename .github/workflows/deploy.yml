@@ -1,30 +1,29 @@
-name: Deploy chatApp t0 EC2
+name: Deploy chatApp to EC2
 
 on:
   push:
-      branches:
-		- main
-
+    branches:
+      - main
 
 jobs:
-    deploy:
-          runs-on: ubuntu-latest
+  deploy:
+    runs-on: ubuntu-latest
 
-	  steps:
-               - name: checkout Repo
-		 uses: actions/checkout@v4
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
 
-	       - name: Deploy to EC2
-                 uses: appleboy/ssh-action@v1
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/new_chat_app
+            git pull
 
-		 with:
-		    host: ${{secrets.EC2_HOST}}
-		    username: ${{secrets.EC2_USER}}
-                    key: ${{secrets.EC2_SSH_KEY}}
-                    script: |
-			cd ~/new_chat_app
-			git pull
-			docker rm -f new_chat_app || true
-			docker build -t new_chat_app .
-			docker run -d -p 3000:3000 --env-file .env --name new_chat_app new_chat_app
+            docker rm -f new_chat_app || true
+            docker build -t new_chat_app .
+            docker run -d -p 3000:3000 --env-file .env --name new_chat_app new_chat_app
 
