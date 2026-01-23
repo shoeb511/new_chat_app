@@ -134,7 +134,7 @@ body {
   flex-direction: column;
   padding: 15px;
   /* background: #ffffff; */
-  background: pink
+  background: yellow
   border-right: 1px solid #ddd;
 }
 
@@ -194,7 +194,7 @@ body {
 /* own message (later we’ll apply this via JS) */
 #messages li.self {
   margin-left: auto;
-  background: #2563eb;
+  background: green;
   color: white;
 }
 
