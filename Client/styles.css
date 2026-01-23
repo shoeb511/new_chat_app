@@ -134,7 +134,6 @@ body {
   flex-direction: column;
   padding: 15px;
   /* background: #ffffff; */
-  background: yellow;
   border-right: 1px solid #ddd;
 }
 
@@ -194,7 +193,7 @@ body {
 /* own message (later we’ll apply this via JS) */
 #messages li.self {
   margin-left: auto;
-  background: green;
+  background: #2563eb;
   color: white;
 }
 
@@ -226,7 +225,7 @@ body {
   padding: 10px 18px;
   border: none;
   border-radius: 20px;
-  background: blue;
+  background: pink;
   color: white;
   cursor: pointer;
 }
