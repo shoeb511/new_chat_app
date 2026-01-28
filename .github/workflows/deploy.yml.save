@@ -1,0 +1,20 @@
+name: Deploy chat app to EC2
+
+on: 
+  push:
+      branches:
+	- main
+
+jobs:
+    deploy:
+          runs-on: ubuntu-latest
+	  
+	  -name: checkout Repo
+           uses: actions/checkout@v4
+
+	  -name: Deploy to EC2
+           uses: appleboy/ssh-action@v1
+
+	   with: 
+		host: 
+${{secrets.EC2_HOST}}
