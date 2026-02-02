@@ -1,4 +1,4 @@
-name: Deploy chatApp to EC2
+name: Zero Downtime Deploy
 
 on:
   push:
@@ -20,10 +20,10 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd ~/new_chat_app
-            git pull
+            # cd ~/new_chat_app
+            # git pull
 
-            docker rm -f new_chat_app || true
-            docker build -t new_chat_app .
-            docker run -d -p 3000:3000 --restart unless-stopped --env-file .env --name new_chat_app new_chat_app
-
+            # docker rm -f new_chat_app || true
+            # docker build -t new_chat_app .
+            # docker run -d -p 3000:3000 --restart unless-stopped --env-file .env --name new_chat_app new_chat_app
+            /home/ec2-user/zero_downtime_deploy.sh
